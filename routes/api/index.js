@@ -23,3 +23,50 @@ router.get('/notes/:id', (req, res) => {
     });
     
 });
+
+// POST route for adding a new note
+router.post('/notes', (req, res) => {
+    const { title, text } = req.body;
+    
+
+    if (title && text) {
+        const newNote = {
+            title,
+            text,
+            id: uuidv4(),
+            
+        };
+
+        fs.readFile('./db/db.json', 'utf8', (err, data) => {
+            if (err) {
+                console.error(err);
+            } else {
+                const parsedNotes = JSON.parse(data);
+                parsedNotes.push(newNote);
+
+                fs.writeFile(
+                    './db/db.json',
+                    JSON.stringify(parsedNotes),
+                    (writeErr) =>
+                        writeErr
+                            ? console.error(writeErr)
+                            : console.info('Successfully updated notes!'))
+            }
+        })
+
+        const response = {
+            status: 'success',
+            body: newNote,
+          };
+      
+          console.log(response);
+          res.status(201).json(response);
+    } else {
+        res.status(500).json('Error in posting note');
+      }
+    
+
+});
+
+
+module.exports = router; 
