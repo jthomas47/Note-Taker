@@ -24,6 +24,23 @@ router.get('/notes/:id', (req, res) => {
     
 });
 
+// DELETE route for deleting a specific note
+router.delete('/notes/:id', (req, res) => {
+    const noteId = req.params.id; 
+    readFromFile('./db/db.json')
+    .then((data) => JSON.parse(data))
+    .then((json) => {
+      const result = json.filter((note) => note.id !== noteId);
+      fs.writeFile('./db/db.json',
+      JSON.stringify(result),
+                    (writeErr) =>
+                        writeErr
+                            ? console.error(writeErr)
+                            : console.info('Successfully deleted!'))
+    }); 
+});
+
+
 // POST route for adding a new note
 router.post('/notes', (req, res) => {
     const { title, text } = req.body;
